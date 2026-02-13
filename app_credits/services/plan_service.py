@@ -66,13 +66,13 @@ class PlanService:
                 fact_sum = 0.0
 
                 if category_name in [CategoryNames.ISSUANCE_EN, CategoryNames.ISSUANCE_UA]:
-                    _, fact_sum = await uow.plans.get_issued_credits(period_start, check_date)
+                    _, fact_sum = await uow.credits.get_issued_credits(period_start, check_date)
 
                 elif category_name in [
                     CategoryNames.COLLECTION_EN, CategoryNames.PERCENT_EN,
                     CategoryNames.COLLECTION_UA, CategoryNames.PERCENT_UA
                 ]:
-                    _, fact_sum = await uow.plans.get_percent_payments(period_start, check_date)
+                    _, fact_sum = await uow.payments.get_percent_payments(period_start, check_date)
                 else:
                     continue
 
@@ -99,8 +99,8 @@ class PlanService:
             for month in range(1, 13):
                 start_date = date(year, month, 1)
                 end_date = date(year, month, monthrange(year, month)[1])
-                i_count, i_sum = await uow.plans.get_issued_credits(start_date, end_date)
-                p_count, p_sum = await uow.plans.get_percent_payments(start_date, end_date)
+                i_count, i_sum = await uow.credits.get_issued_credits(start_date, end_date)
+                p_count, p_sum = await uow.payments.get_percent_payments(start_date, end_date)
 
                 monthly_cache[month] = {"i_count": i_count, "i_sum": i_sum, "p_count": p_count, "p_sum": p_sum}
                 year_issued_total += i_sum
@@ -122,7 +122,7 @@ class PlanService:
                 result.append(YearPerformanceMonthResponse(
                     month=month, year=year,
                     issued_plan_sum=i_plan, issued_fact_sum=m["i_sum"], issued_count=m["i_count"],
-                    issued_percent=(round((m["i_sum"] / i_plan) * 100, 2) if i_plan else 0),
+                    issued_percent=(round((m["i_sum"] / i_plan) * 100, 2) if i_plan else 0),  # if... защита от деления на ноль
                     payments_plan_sum=p_plan, payments_fact_sum=m["p_sum"], payments_count=m["p_count"],
                     payments_percent=(round((m["p_sum"] / p_plan) * 100, 2) if p_plan else 0),
                     issued_part_of_year=(round((m["i_sum"] / year_issued_total) * 100, 2) if year_issued_total else 0),

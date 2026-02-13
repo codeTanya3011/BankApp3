@@ -1,16 +1,11 @@
 from datetime import date
 from sqlalchemy import select, func
-from ..models import Plan, Credit, Payment, Dictionary
+from ..models import Plan
 from .base_repo import BaseRepo
 from sqlalchemy.orm import joinedload
 
 
 class PlanRepo(BaseRepo):
-
-    async def get_category_by_name(self, name: str) -> Dictionary | None:
-        stmt = select(Dictionary).where(Dictionary.name == name)
-        result = await self.db.execute(stmt)
-        return result.scalar_one_or_none()
 
     async def plan_exists(self, period: date, category_id: int) -> bool:
         stmt = select(Plan.id).where(
@@ -45,33 +40,5 @@ class PlanRepo(BaseRepo):
         result = await self.db.execute(stmt)
         return list(result.scalars().all())
 
-    async def get_issued_credits(
-        self,
-        date_from: date,
-        date_to: date
-    ) -> tuple[int, float]:
-        stmt = select(
-            func.count(Credit.id),
-            func.coalesce(func.sum(Credit.body), 0)
-        ).where(
-            Credit.issuance_date.between(date_from, date_to)
-        )
-        result = await self.db.execute(stmt)
-        count, total = result.one()
-        return count, float(total)
 
-    async def get_percent_payments(
-        self,
-        date_from: date,
-        date_to: date
-    ) -> tuple[int, float]:
-        stmt = select(
-            func.count(Payment.id),
-            func.coalesce(func.sum(Payment.sum), 0)
-        ).join(Dictionary, Payment.type_id == Dictionary.id).where(
-            Payment.payment_date.between(date_from, date_to),
-            Dictionary.name.in_(["відсотки", "тіло"])
-        )
-        result = await self.db.execute(stmt)
-        count, total = result.one()
-        return count, float(total)
+

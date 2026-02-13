@@ -1,6 +1,7 @@
-from sqlalchemy import select
 from ..models import Credit
 from .base_repo import BaseRepo
+from datetime import date
+from sqlalchemy import select, func
 
 
 class CreditRepo(BaseRepo):
@@ -18,5 +19,20 @@ class CreditRepo(BaseRepo):
         stmt = select(Credit).where(Credit.id == credit_id)
         res = await self.db.execute(stmt)
         return res.scalar_one_or_none()
+
+    async def get_issued_credits(
+        self,
+        date_from: date,
+        date_to: date
+    ) -> tuple[int, float]:
+        stmt = select(
+            func.count(Credit.id),
+            func.coalesce(func.sum(Credit.body), 0)
+        ).where(
+            Credit.issuance_date.between(date_from, date_to)
+        )
+        result = await self.db.execute(stmt)
+        count, total = result.one()
+        return count, float(total)
 
 

@@ -66,7 +66,7 @@ class CreditService:
     async def open_credit_data(credit_data: dict, uow: UnitOfWork) -> UserCreditResponse:
         credit_id = credit_data["id"]
         payments = await uow.payments.get_credit_payments(credit_id)
-
+        # Инициализация сумм
         body_sum = Decimal("0")
         percent_sum = Decimal("0")
 

@@ -1,5 +1,4 @@
 import os
-import pandas as pd
 from .dictionary_service import DictionaryService
 from .plan_service import PlanService
 from .payment_service import PaymentService
