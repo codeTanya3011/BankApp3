@@ -5,12 +5,12 @@ from collections import defaultdict
 from decimal import Decimal
 import io
 from ..data_base import UnitOfWork
+from ..exceptions import AppException
 from ..models import CategoryNames
 from ..schemas import (
     PlanPerformanceResponse,
     YearPerformanceMonthResponse
 )
-from fastapi import HTTPException
 
 
 class PlanService:
@@ -25,7 +25,7 @@ class PlanService:
         try:
             df = pd.read_excel(io.BytesIO(file_bytes))
         except Exception:
-            raise HTTPException(status_code=400, detail="Наданий файл не є валідним Excel-файлом")
+            raise AppException(message="Наданий файл не є валідним Excel-файлом", status_code=400)
 
         await PlanService._process_dataframe(df, uow)
 
@@ -34,24 +34,28 @@ class PlanService:
         async with uow:
             for _, row in df.iterrows():
                 amount = row["sum"]
+
                 if pd.isna(amount):
-                    raise Exception("Стовпець 'сума' не має містити пустих значень")
+                    raise AppException("Стовпець 'сума' не має містити пустих значень")
 
                 period_dt = pd.to_datetime(row["period"], dayfirst=True).date()
                 if period_dt.day != 1:
-                    raise Exception(f"Невірний період: {period_dt}. Має бути 1-ше число місяця.")
+                    raise AppException(f"Невірний період: {period_dt}. Має бути 1-ше число місяця.")
 
                 category_id = int(row["category_id"])
 
                 if await uow.plans.plan_exists(period_dt, category_id):
-                    raise Exception(f"План для категорії {category_id} на період {period_dt} вже існує")
-
+                    raise AppException(
+                        f"План для категорії {category_id} на період {period_dt} вже існує",
+                        status_code=409
+                    )
                 plan_payload = {
                     "period": period_dt,
                     "sum": Decimal(str(amount)),
                     "category_id": category_id
                 }
                 await uow.plans.create_plan(**plan_payload)
+
             await uow.commit()
 
     @staticmethod
@@ -122,7 +126,7 @@ class PlanService:
                 result.append(YearPerformanceMonthResponse(
                     month=month, year=year,
                     issued_plan_sum=i_plan, issued_fact_sum=m["i_sum"], issued_count=m["i_count"],
-                    issued_percent=(round((m["i_sum"] / i_plan) * 100, 2) if i_plan else 0),  # if... защита от деления на ноль
+                    issued_percent=(round((m["i_sum"] / i_plan) * 100, 2) if i_plan else 0),  # if... захист від ділення на нуль
                     payments_plan_sum=p_plan, payments_fact_sum=m["p_sum"], payments_count=m["p_count"],
                     payments_percent=(round((m["p_sum"] / p_plan) * 100, 2) if p_plan else 0),
                     issued_part_of_year=(round((m["i_sum"] / year_issued_total) * 100, 2) if year_issued_total else 0),

@@ -29,6 +29,7 @@ class CreditService:
                     "percent": Decimal(str(row["percent"]))
                 }
                 await uow.credits.create_credit(**credit_payload)
+
             await uow.commit()
 
     @staticmethod
@@ -40,6 +41,7 @@ class CreditService:
 
             credits_objs = await uow.credits.get_user_credits(user_id)
             if not credits_objs:
+
                 return UserCreditsListResponse(user_id=user_id, credits=[])
 
             result: List[UserCreditResponse] = []
@@ -60,13 +62,14 @@ class CreditService:
 
     @staticmethod
     async def closed_credit_data(credit_data: dict, uow: UnitOfWork) -> UserCreditResponse:
+
         return await CreditService.open_credit_data(credit_data, uow)
 
     @staticmethod
     async def open_credit_data(credit_data: dict, uow: UnitOfWork) -> UserCreditResponse:
         credit_id = credit_data["id"]
         payments = await uow.payments.get_credit_payments(credit_id)
-        # Инициализация сумм
+        # ініціалізація сум
         body_sum = Decimal("0")
         percent_sum = Decimal("0")
 

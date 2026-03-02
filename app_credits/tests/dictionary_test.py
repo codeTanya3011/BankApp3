@@ -15,5 +15,5 @@ async def test_dictionaries_integrity(ac: AsyncClient):
         assert isinstance(item["plan_sum"], (int, float, Decimal))
 
         assert item["plan_sum"] >= 0, f"План для {item['category']} негативний!"
-        #проверка связей и типов данных
+        #перевірка зв'язків та типів даних
 

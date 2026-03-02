@@ -5,6 +5,7 @@ from .payment_service import PaymentService
 from .user_service import UserService
 from .credit_service import CreditService
 from ..data_base import engine, UnitOfWork
+from ..exceptions import AppException
 from ..models import Base
 
 
@@ -13,8 +14,8 @@ class ImportService:
     @staticmethod
     async def import_all_data(uow: UnitOfWork):
         async with engine.begin() as conn:
-
             await conn.run_sync(Base.metadata.create_all)
+
         steps = [
             ("users.csv", UserService.import_users_from_csv),
             ("dictionary.csv", DictionaryService.import_dictionary_from_csv),
@@ -34,12 +35,12 @@ class ImportService:
                 with open(path, "rb") as f:
                     file_bytes = f.read()
                     if not file_bytes:
-                        log.append(f"⚠️ {file_name} пустий")
-                        continue
+                        raise AppException(f"Файл {file_name} порожній", status_code=400)
 
                     await func(file_bytes, uow)
 
                 log.append(f"✅ {file_name} успішно загружено")
+
             except Exception as e:
                 log.append(f"❌ Помилка в {file_name}: {type(e).__name__} - {str(e)}")
 

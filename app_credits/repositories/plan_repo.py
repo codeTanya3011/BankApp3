@@ -13,6 +13,7 @@ class PlanRepo(BaseRepo):
             Plan.category_id == category_id
         )
         result = await self.db.execute(stmt)
+
         return result.scalar_one_or_none() is not None
 
     async def create_plan(self, **plan_data) -> None:
@@ -26,6 +27,7 @@ class PlanRepo(BaseRepo):
             .where(func.extract("year", Plan.period) == year)
         )
         result = await self.db.execute(stmt)
+
         return list(result.scalars().all())
 
     async def get_plans_for_month(self, year: int, month: int) -> list[Plan]:
@@ -38,6 +40,7 @@ class PlanRepo(BaseRepo):
             )
         )
         result = await self.db.execute(stmt)
+
         return list(result.scalars().all())
 
 

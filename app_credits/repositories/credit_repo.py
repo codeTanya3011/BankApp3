@@ -9,6 +9,7 @@ class CreditRepo(BaseRepo):
     async def get_user_credits(self, user_id: int):
         stmt = select(Credit).where(Credit.user_id == user_id)
         result = await self.db.execute(stmt)
+
         return result.scalars().all()
 
     async def create_credit(self, **credit_data) -> None:
@@ -18,6 +19,7 @@ class CreditRepo(BaseRepo):
     async def get_credit_by_id(self, credit_id: int):
         stmt = select(Credit).where(Credit.id == credit_id)
         res = await self.db.execute(stmt)
+
         return res.scalar_one_or_none()
 
     async def get_issued_credits(
@@ -33,6 +35,7 @@ class CreditRepo(BaseRepo):
         )
         result = await self.db.execute(stmt)
         count, total = result.one()
+
         return count, float(total)
 
 

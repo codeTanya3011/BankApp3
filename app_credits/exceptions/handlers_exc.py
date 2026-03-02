@@ -1,7 +1,7 @@
 from fastapi import Request, status
 from fastapi.responses import JSONResponse
-from .base_exc import AppException, NotFoundError
-from .not_found import NotFoundUserError, ValidationError
+from .base_exc import AppException
+from .not_found import NotFoundUserError
 from sqlalchemy.exc import IntegrityError
 
 
@@ -34,29 +34,6 @@ def integrity_error_handler(request: Request, exc: IntegrityError) -> JSONRespon
         content={
             "detail": str(exc.orig),
             "type": "IntegrityError"
-        }
-    )
-
-
-def not_found_exception_handler(request: Request, exc: NotFoundError) -> JSONResponse:
-
-    return JSONResponse(
-        status_code=exc.status_code,
-        content={
-            "detail": exc.message,
-            "type": exc.__class__.__name__,
-        },
-    )
-
-
-def validation_exception_handler(request: Request, exc: ValidationError) -> JSONResponse:
-
-    return JSONResponse(
-        status_code=exc.status_code,
-        content={
-            "detail": exc.message,
-            "type": "ValidationError",
-            "path": request.url.path
         }
     )
 

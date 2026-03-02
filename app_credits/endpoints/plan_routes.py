@@ -5,9 +5,10 @@ from ..data_base import UnitOfWork, get_unit_of_work
 from ..services import PlanService, ImportService
 from ..schemas import MessageResponse, YearPerformanceMonthResponse, PlanPerformanceResponse
 
+
 plan_router = APIRouter(prefix="/plans", tags=["Plans"])
 
-# Создаем псевдоним для чистоты кода
+# Створюємо псевдонім, щоб код був чистим
 UOWDep = Annotated[UnitOfWork, Depends(get_unit_of_work)]
 
 

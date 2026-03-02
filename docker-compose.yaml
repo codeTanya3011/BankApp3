@@ -1,14 +1,12 @@
 services:
-
   db_container_5:
     image: postgres:15-alpine
     container_name: postgres_credits_v5
     restart: always
     environment:
-
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: ${POSTGRES_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
     ports:
       - "5435:5432"
     volumes:
@@ -26,5 +24,4 @@ services:
       - db_container_5
 
 volumes:
-
   credits_data_v5:

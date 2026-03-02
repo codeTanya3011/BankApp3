@@ -2,7 +2,7 @@ from .base_repo import BaseRepo
 from sqlalchemy.orm import joinedload
 from datetime import date
 from sqlalchemy import select, func
-from ..models import Payment, Dictionary
+from ..models import Payment, Dictionary, CategoryNames
 
 
 class PaymentRepo(BaseRepo):
@@ -14,6 +14,7 @@ class PaymentRepo(BaseRepo):
             .where(Payment.credit_id == credit_id)
         )
         result = await self.db.execute(stmt)
+
         return result.scalars().all()
 
     async def create_payment(self, **payment_data) -> None:
@@ -28,10 +29,17 @@ class PaymentRepo(BaseRepo):
         stmt = select(
             func.count(Payment.id),
             func.coalesce(func.sum(Payment.sum), 0)
-        ).join(Dictionary, Payment.type_id == Dictionary.id).where(
+        ).join(
+            Dictionary,
+            Payment.type_id == Dictionary.id
+        ).where(
             Payment.payment_date.between(date_from, date_to),
-            Dictionary.name.in_(["відсотки", "тіло"])
+            Dictionary.name.in_([
+                CategoryNames.PERCENT_UA.value,
+                CategoryNames.BODY_UA.value
+            ])
         )
         result = await self.db.execute(stmt)
         count, total = result.one()
+
         return count, float(total)
