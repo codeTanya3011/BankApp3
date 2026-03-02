@@ -11,8 +11,16 @@ calculates plan execution efficiency, and provides deep user-level insights.
 ---
 
 ## 🌐 Live Demo & Testing
-The application is deployed and available for interactive testing:
-🔗 **[API Swagger Documentation](ВАША_ССЫЛКА_БУДЕТ_ЗДЕСЬ/docs)**
+The application is deployed on a VPS and is ready for testing. 
+
+* 🔗 **[Interactive API Documentation (Swagger)](http://45.76.80.201:8000/docs)**
+* 🛠 **How to test:**
+*   1. Open the link above.
+    2. Use the `POST /plans/setup-database` endpoint to initialize the database with sample data.
+    3. Explore other endpoints to check performance and calculate credits below ⬇️.
+
+> **Note:** Since the server uses a public IP without an SSL certificate, your browser might show a "Not Secure" warning.
+> Please click "Advanced" -> "Proceed" to access the Swagger UI.
 
 ### 💡 Quick Sandbox Guide:
 To see the system in action without uploading your own files, use these predefined ranges:
@@ -22,6 +30,8 @@ To see the system in action without uploading your own files, use these predefin
 
 2. **`GET /plans/performance`** (Monthly): 
    * Use dates between **`2020-01-01`** and **`2022-07-01`** for actual data.
+   * **Robust Date Handling:** If you enter dates outside this range (e.g., from the future or periods with no records),
+   * the system will handle it gracefully, returning an empty list `[]` instead of an error.
 
 3. **`GET /plans/year_performance`** (Annual): 
    * **Data Range:** Active plans are available for **2020, 2021, and 2022**.
