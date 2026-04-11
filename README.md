@@ -38,19 +38,21 @@ To see the system in action without uploading your own files, use these predefin
 * 📊 **Performance Analytics:** Real-time calculation of plan execution (Issuance, Collection, Percentages).
 * 🔍 **Credit Tracker:** Comprehensive history for each `user_id` including body, interest, and overdue status.
 * 🛡️ **Advanced Exception Handling:** Custom error hierarchy (`AppException`, `IntegrityError`) for clear API responses.
+* 🛠  **Database Versioning:** Managed by Alembic for reliable schema migrations and evolution.
 * 🚀 **Docker Ready:** Fully containerized environment for instant deployment.
 
 ---
 
 ## 🛠 Tech Stack
 
-| Component | Technology |
-| :--- | :--- |
-| **Backend** | **FastAPI** (Asynchronous) |
-| **Database** | **PostgreSQL** |
-| **ORM** | **SQLAlchemy 2.0** (Async) |
-| **Data Science** | **Pandas** (ETL processes) |
-| **Testing** | **Pytest** (Asyncio) |
+| Component | Technology                  |
+| :--- |:----------------------------|
+| **Backend** | **FastAPI** (Asynchronous)  |
+| **Database** | **PostgreSQL**              |
+| **ORM** | **SQLAlchemy 2.0** (Async)  |
+| **Data Science** | **Pandas** (ETL processes)  |
+| **Testing** | **Pytest** (Asyncio)        |
+| **Migrations** | **Alembic**                 |
 | **Infrastructure** | **Docker / Docker Compose** |
 
 ---
@@ -59,21 +61,26 @@ To see the system in action without uploading your own files, use these predefin
 
 ### 1️⃣ Deployment
 Ensure you have Docker installed, then run:
-
+```
 docker-compose up -d --build
-
-2️⃣ Database Initialization
+```
+2️⃣ Database Migrations
+Apply the database schema using Alembic to create all necessary tables:
+```
+docker-compose exec app alembic upgrade head
+```
+3️⃣ Database Initialization
 Once the containers are running, navigate to http://127.0.0.1:8000/docs and execute the setup endpoint to prepopulate your database:
 
-HTTP
-POST /plans/setup-database
-✨ Pro Tip: This command automatically creates all necessary SQL tables and migrates initial data from the documents/ folder.
+HTTP POST /plans/setup-database
+✨ Pro Tip: This command migrates initial data from the documents/ folder. Ensure you have completed Step 2 (Migrations) before running this.
 You only need to run this once.
 
-3️⃣ Running Tests
+4️⃣ Running Tests
 To verify system stability and ensure all endpoints are working as expected within the Docker environment, use this command:
+```
 docker-compose exec app pytest -v
-
+```
 ---
 
 ### 📋 API Reference

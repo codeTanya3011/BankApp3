@@ -13,8 +13,6 @@ class ImportService:
 
     @staticmethod
     async def import_all_data(uow: UnitOfWork):
-        async with engine.begin() as conn:
-            await conn.run_sync(Base.metadata.create_all)
 
         steps = [
             ("users.csv", UserService.import_users_from_csv),
