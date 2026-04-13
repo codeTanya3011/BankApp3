@@ -30,11 +30,8 @@ def general_exception_handler(request: Request, exc: Exception) -> JSONResponse:
 def integrity_error_handler(request: Request, exc: IntegrityError) -> JSONResponse:
 
     return JSONResponse(
-        status_code=status.HTTP_409_CONFLICT,
-        content={
-            "detail": str(exc.orig),
-            "type": "IntegrityError"
-        }
+        status_code=400,
+        content={"detail": "Data integrity error. Check for duplicate IDs or related records"}
     )
 
 

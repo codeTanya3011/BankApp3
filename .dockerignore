@@ -21,6 +21,7 @@ ENV/
 
 .DS_Store
 Thumbs.db
+env_file
 
 pg_data/
 credits_data_v5/

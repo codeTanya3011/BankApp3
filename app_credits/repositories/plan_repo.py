@@ -1,5 +1,5 @@
 from datetime import date
-from sqlalchemy import select, func
+from sqlalchemy import select, func, insert, tuple_
 from ..models import Plan
 from .base_repo import BaseRepo
 from sqlalchemy.orm import joinedload
@@ -42,6 +42,24 @@ class PlanRepo(BaseRepo):
         result = await self.db.execute(stmt)
 
         return list(result.scalars().all())
+
+    async def get_existing_plans_bulk(self, periods: list, category_ids: list):
+
+        pairs = [(p, c) for p, c in zip(periods, category_ids)]
+
+        stmt = select(Plan).where(
+            tuple_(Plan.period, Plan.category_id).in_(pairs)
+        )
+        res = await self.db.execute(stmt)
+        return res.scalars().all()
+
+    async def bulk_create_plans(self, data_list: list[dict]):
+
+        if not data_list:
+            return
+
+        stmt = insert(Plan).values(data_list)
+        await self.db.execute(stmt)
 
 
 

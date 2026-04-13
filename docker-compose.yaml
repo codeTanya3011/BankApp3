@@ -1,3 +1,5 @@
+version: '3.8'
+
 services:
   db_container_5:
     image: postgres:15-alpine
@@ -12,6 +14,12 @@ services:
     volumes:
       - credits_data_v5:/var/lib/postgresql/data
 
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
   app:
     build: .
     container_name: fastapi_app_v5
@@ -21,7 +29,8 @@ services:
     env_file:
       - .env
     depends_on:
-      - db_container_5
+      db_container_5:
+        condition: service_healthy
 
 volumes:
   credits_data_v5:

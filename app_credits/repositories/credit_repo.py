@@ -1,7 +1,7 @@
 from ..models import Credit
 from .base_repo import BaseRepo
 from datetime import date
-from sqlalchemy import select, func
+from sqlalchemy import select, func, extract
 
 
 class CreditRepo(BaseRepo):
@@ -37,5 +37,18 @@ class CreditRepo(BaseRepo):
         count, total = result.one()
 
         return count, float(total)
+
+    async def get_year_issued_stats(self, year: int):
+        stmt = (
+            select(
+                extract('month', Credit.issuance_date).label('month'),
+                func.count(Credit.id).label('count'),
+                func.coalesce(func.sum(Credit.body), 0).label('total_sum')
+            )
+            .where(extract('year', Credit.issuance_date) == year)
+            .group_by('month')
+        )
+        result = await self.db.execute(stmt)
+        return result.all()
 
 
