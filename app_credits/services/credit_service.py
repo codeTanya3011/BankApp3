@@ -75,9 +75,12 @@ class CreditService:
 
         if payments:
             for p in payments:
-                raw_type_name = getattr(p, "name", getattr(p, "type_name", "unknown"))
-                p_type = str(raw_type_name).lower().strip()
-                p_sum = Decimal(str(p.sum))
+                if p.payment_type:
+                    p_type = str(p.payment_type.name).lower().strip()
+                else:
+                    p_type = "unknown"
+
+                p_sum = p.sum
 
                 if p_type in [CategoryNames.BODY_UA, CategoryNames.BODY_EN]:
                     body_sum += p_sum
