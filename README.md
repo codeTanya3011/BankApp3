@@ -12,7 +12,11 @@ calculates plan execution efficiency, and provides deep user-level insights.
 
 ## 🌐 Live Demo & Testing
 The application is deployed and available for interactive testing:
-🔗 **[Interactive App Documentation (Swagger)](https://tanya-dev.help/docs)**
+
+🔗 **[Interactive App Documentation (Swagger)](https://api.tanya-dev.help/docs)**
+🔗 **[Alternative Documentation (ReDoc)](https://api.tanya-dev.help/redoc)**
+
+* **Status:** Deployed and Production-ready via Nginx & Docker.
 
 ### 💡 Quick Sandbox Guide:
 To see the system in action without uploading your own files, use these predefined ranges:
